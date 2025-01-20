@@ -17,15 +17,14 @@ This project analyses employee performance, department-level salary distribution
 - Who are the most recently hired employees in each department?
 - What is the cumulative salary expenditure over time?
 
- ## 1. Join Employees and Departments
+## 1. Join Employees and Departments
 Purpose: To create a complete dataset showing employee details along with department information.
 
-``sql
+```sql
 SELECT e.employee_id, e.employee_name, d.department_name, e.hire_date, e.salary
 FROM employees e
 JOIN departments d ON e.department_id = d.department_id;
-
-``
+```
 
 ## 2. Rank Employees Based on Performance Score
 Purpose: Identify top performers in each department and ranking employees by performance within their departments.
