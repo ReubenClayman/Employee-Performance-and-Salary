@@ -1,7 +1,7 @@
 # Employee Performance and Salary Insights
 
 **Project Overview**
-This project analyzes employee performance, department-level salary distributions, and organizational trends. The dataset consists of three tables:
+This project analyses employee performance, department-level salary distributions, and organizational trends. The dataset consists of three tables:
 
 `employees:` Information about employees (e.g., employee_id, name, department_id, hire_date, salary).
 
