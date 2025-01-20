@@ -1,0 +1,67 @@
+-- Task 1: Join Employees and Departments
+SELECT e.employee_id, e.employee_name, d.department_name, e.hire_date, e.salary
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id;
+
+-- Task 2: Rank Employees Based on Performance Score
+WITH ranked_performance AS (
+    SELECT e.employee_id, e.employee_name, d.department_name, p.performance_score,
+           RANK() OVER (PARTITION BY e.department_id ORDER BY p.performance_score DESC) AS rank
+    FROM employees e
+    JOIN performance p ON e.employee_id = p.employee_id
+    JOIN departments d ON e.department_id = d.department_id
+)
+SELECT * 
+FROM ranked_performance
+WHERE rank = 1;
+
+-- Task 3: Calculate Average Salary per Department
+SELECT d.department_name, AVG(e.salary) AS avg_salary
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+GROUP BY d.department_name
+ORDER BY avg_salary DESC;
+
+-- Task 4: Analyze Salary and Performance Correlation
+SELECT e.employee_id, e.employee_name, e.salary, p.performance_score
+FROM employees e
+JOIN performance p ON e.employee_id = p.employee_id
+ORDER BY e.salary DESC;
+
+-- Task 5: Recently Hired Employees in Each Department
+WITH latest_hires AS (
+    SELECT e.employee_id, e.employee_name, d.department_name, e.hire_date,
+           ROW_NUMBER() OVER (PARTITION BY e.department_id ORDER BY e.hire_date DESC) AS recent_rank
+    FROM employees e
+    JOIN departments d ON e.department_id = d.department_id
+)
+SELECT *
+FROM latest_hires
+WHERE recent_rank = 1;
+
+-- Task 6: Union Employees with and without Recent Performance Scores
+WITH recent_reviews AS (
+    SELECT e.employee_id, e.employee_name, p.review_date, p.performance_score
+    FROM employees e
+    JOIN performance p ON e.employee_id = p.employee_id
+    WHERE p.review_date >= NOW() - INTERVAL '1 year'
+)
+SELECT e.employee_id, e.employee_name, 'Reviewed' AS status
+FROM recent_reviews
+UNION
+SELECT e.employee_id, e.employee_name, 'Not Reviewed' AS status
+FROM employees e
+WHERE e.employee_id NOT IN (SELECT employee_id FROM recent_reviews);
+
+-- Task 7: Offset and Fetch: Paginated Employee List
+SELECT e.employee_id, e.employee_name, e.salary, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+ORDER BY e.employee_id
+OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY;
+
+-- Task 8: Cumulative Salary Expenditure Over Time
+SELECT e.hire_date, e.salary,
+       SUM(e.salary) OVER (ORDER BY e.hire_date) AS cumulative_salary
+FROM employees e
+ORDER BY e.hire_date;
